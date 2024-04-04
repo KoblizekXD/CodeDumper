@@ -1,0 +1,9 @@
+name: CodeDumper
+version: '${version}'
+main: lol.koblizek.codedumper.CodeDumper
+api-version: '1.20'
+load: STARTUP
+commands:
+  getclass:
+    description: Get details about a class(es)
+    usage: /getclass [classes...]
