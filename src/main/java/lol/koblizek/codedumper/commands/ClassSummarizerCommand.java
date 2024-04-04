@@ -2,6 +2,7 @@ package lol.koblizek.codedumper.commands;
 
 import lol.koblizek.codedumper.CodeDumper;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -11,8 +12,11 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class ClassSummarizerCommand implements CommandExecutor {
@@ -26,6 +30,28 @@ public class ClassSummarizerCommand implements CommandExecutor {
                 .color(TextColor.fromHexString("#e4bd6d")).append(Component.text(".").color(NamedTextColor.WHITE))
                 .append(Component.text(field.getName()).color(TextColor.fromHexString("#de6c74")));
         return modifiers.appendSpace().append(name);
+    }
+
+    public static Component convertMethod(Method method) {
+        Component modifiers = Component.text(Modifier.toString(method.getModifiers()))
+                .color(NamedTextColor.LIGHT_PURPLE);
+        Component name = Component.text(method.getDeclaringClass().getSimpleName())
+                .color(TextColor.fromHexString("#e4bd6d")).append(Component.text("::").color(NamedTextColor.WHITE))
+                .append(Component.text(method.getName()).color(TextColor.fromHexString("#3a7cdd")));
+        Component params = Component.text("(").color(TextColor.fromHexString("#e4bd6d"));
+        List<TextComponent> components = Arrays.stream(method.getParameters()).map(parameter -> {
+            return Component.text(parameter.getType().getSimpleName())
+                    .color(TextColor.fromHexString("#e4bd6d")).append(Component.text(" ")).append(Component.text(parameter.getName())
+                    .color(TextColor.fromHexString("#de6c74")));
+        }).toList();
+        for (int i = 0; i < components.size(); i++) {
+            params = params.append(components.get(i));
+            if (i != components.size() - 1) {
+                params = params.append(Component.text(", ")).color(TextColor.fromHexString("#e4bd6d"));
+            }
+        }
+        params = params.append(Component.text(")")).color(TextColor.fromHexString("#e4bd6d"));
+        return modifiers.appendSpace().append(name).append(params);
     }
 
     public static Component appendComponents(Component... component) {
@@ -68,7 +94,12 @@ public class ClassSummarizerCommand implements CommandExecutor {
                                         .collect(Collectors.joining(", "))))
                                 .color(NamedTextColor.WHITE)).appendNewline().appendNewline()
                         .append(Component.text("Field summary: ").appendNewline()
-                                .append(appendComponents(fields))));
+                                .append(appendComponents(fields))).appendNewline()
+                        .append(Component.text("Method summary: ").appendNewline()
+                                .append(appendComponents(Arrays.stream(type.getDeclaredMethods())
+                                        .map(ClassSummarizerCommand::convertMethod)
+                                        .toArray(Component[]::new)))).appendNewline()
+                );
             } catch (ClassNotFoundException e) {
                 sender.sendMessage(MiniMessage.miniMessage()
                         .deserialize("<red>Class <bold>" + arg + "</bold> was not found in class loader: " + this.getClass().getClassLoader().getName() + "</red>"));
