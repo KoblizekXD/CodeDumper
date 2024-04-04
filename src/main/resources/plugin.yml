@@ -7,3 +7,6 @@ commands:
   getclass:
     description: Get details about a class(es)
     usage: /getclass [classes...]
+  decompile:
+    description: Decompile a class
+    usage: /decompile <class>

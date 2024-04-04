@@ -1,6 +1,7 @@
 package lol.koblizek.codedumper;
 
 import lol.koblizek.codedumper.commands.ClassSummarizerCommand;
+import lol.koblizek.codedumper.commands.DecompileCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ public final class CodeDumper extends JavaPlugin {
     public void onEnable() {
         // Plugin startup logic
         getCommand("getclass").setExecutor(new ClassSummarizerCommand());
+        getCommand("decompile").setExecutor(new DecompileCommand());
     }
 
     @Override
