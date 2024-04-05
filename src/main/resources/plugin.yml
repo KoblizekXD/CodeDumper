@@ -10,3 +10,9 @@ commands:
   decompile:
     description: Decompile a class
     usage: /decompile <class>
+  classexists:
+    description: Check if a class exists
+    usage: /classexists [classes...]
+  packageinfo:
+    description: Get details about a packages
+    usage: /packageinfo [package...]

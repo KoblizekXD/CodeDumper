@@ -1,7 +1,9 @@
 package lol.koblizek.codedumper;
 
+import lol.koblizek.codedumper.commands.ClassExistsCommand;
 import lol.koblizek.codedumper.commands.ClassSummarizerCommand;
 import lol.koblizek.codedumper.commands.DecompileCommand;
+import lol.koblizek.codedumper.commands.PackageInfoCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -14,6 +16,8 @@ public final class CodeDumper extends JavaPlugin {
         // Plugin startup logic
         getCommand("getclass").setExecutor(new ClassSummarizerCommand());
         getCommand("decompile").setExecutor(new DecompileCommand());
+        getCommand("classexists").setExecutor(new ClassExistsCommand());
+        getCommand("packageinfo").setExecutor(new PackageInfoCommand());
     }
 
     @Override
