@@ -7,14 +7,20 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.java.decompiler.main.Fernflower;
+import org.jetbrains.java.decompiler.main.decompiler.SingleFileSaver;
 import org.jetbrains.java.decompiler.main.extern.IContextSource;
 import org.jetbrains.java.decompiler.main.extern.IFernflowerLogger;
 import org.jetbrains.java.decompiler.main.extern.IFernflowerPreferences;
 import org.jetbrains.java.decompiler.main.extern.IResultSaver;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.ClassNode;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.jar.Manifest;
 
 public class DecompileCommand implements CommandExecutor {
@@ -49,8 +55,15 @@ public class DecompileCommand implements CommandExecutor {
     public static class ByteSource implements IContextSource {
 
         private final byte[] bytes;
+        private final String name;
+        private final String basePath;
 
         public ByteSource(byte[] bytes) {
+            ClassReader reader = new ClassReader(bytes);
+            ClassNode node = new ClassNode();
+            reader.accept(node, ClassReader.EXPAND_FRAMES);
+            this.name = Type.getObjectType(node.name).getClassName();
+            this.basePath = Type.getObjectType(node.name).getInternalName();
             this.bytes = bytes;
         }
 
@@ -61,7 +74,7 @@ public class DecompileCommand implements CommandExecutor {
 
         @Override
         public Entries getEntries() {
-            return Entries.EMPTY;
+            return new IContextSource.Entries(List.of(Entry.atBase(this.basePath)), List.of(), List.of());
         }
 
         @Override

@@ -3,8 +3,11 @@ package lol.koblizek.codedumper.commands;
 import lol.koblizek.codedumper.CodeDumper;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -40,8 +43,11 @@ public class ClassSummarizerCommand implements CommandExecutor {
         Component params = Component.text("(").color(TextColor.fromHexString("#e4bd6d"));
         List<TextComponent> components = Arrays.stream(method.getParameters()).map(parameter -> {
             return Component.text(parameter.getType().getSimpleName())
-                    .color(TextColor.fromHexString("#e4bd6d")).append(Component.text(" ")).append(Component.text(parameter.getName())
-                    .color(TextColor.fromHexString("#de6c74")));
+                    .color(TextColor.fromHexString("#e4bd6d")).append(Component.text(" "))
+                    .append(Component.text(parameter.getName())
+                            .color(TextColor.fromHexString("#de6c74"))
+                    ).decorate(TextDecoration.UNDERLINED)
+                    .clickEvent(ClickEvent.runCommand(""));
         }).toList();
         for (int i = 0; i < components.size(); i++) {
             params = params.append(components.get(i));
